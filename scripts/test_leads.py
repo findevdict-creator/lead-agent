@@ -111,7 +111,7 @@ class LeadsTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("added: 2", out)
         self.assertIn("overdue: 1", out)
-        self.assertIn("funnel: new 1 → approved 0 → contacted 1", out)
+        self.assertIn("funnel: candidate 0 → new 1 → approved 0 → contacted 1", out)
 
     def test_products(self):
         self.run_cmd("add", self.sample())
