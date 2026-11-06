@@ -1,0 +1,12 @@
+# Lead data stays local by default. Remove these lines to commit it to a private repo.
+data/leads.csv
+data/notes/
+data/searches.log
+data/product.md
+data/icp.md
+exports/
+outreach/
+
+__pycache__/
+*.tmp
+.DS_Store
