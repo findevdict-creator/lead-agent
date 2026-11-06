@@ -7,9 +7,9 @@ Draft outreach for the lead in `$ARGUMENTS`. First token is the id, optional sec
 
 ## Steps
 
-1. Read `data/product.md` (for positioning, proof points and tone), `python3 scripts/leads.py get <id>`, and `data/notes/<id>.md`. If `outreach/<id>.md` already exists, read it and write a new version below it instead of overwriting.
+1. Read `data/<product>/product.md` (for positioning, proof points and tone), `python3 scripts/leads.py get <id>`, and `data/<product>/notes/<id>.md`. If `outreach/<product>/<id>.md` already exists, read it and write a new version below it instead of overwriting.
 2. Pick the **one specific hook** from the lead's signals or notes that makes this message about them, not about the product (a job post, a launch, a blog post, a tool they use, a complaint). Cite it by URL in the file so the user can check it.
-3. Write `outreach/<id>.md`:
+3. Write `outreach/<product>/<id>.md`:
 
    ```markdown
    # Outreach: <Company> (<id>)

@@ -6,8 +6,8 @@ argument-hint: [days, default 7]
 Produce a digest for the last N days (`$ARGUMENTS`, default 7).
 
 1. Run `python3 scripts/leads.py digest --days <N>` and `python3 scripts/leads.py searches`.
-2. Read `data/icp.md`, in particular `## Search queries` and `## Learned disqualifiers`, and compare against the search log to see which queries and segments have not been tried yet, and which segments produced the highest-scoring leads (use `python3 scripts/leads.py list --json` and group by industry).
-3. Write the digest to `data/digests/<today>.md` (create the folder if needed) and show it in the chat:
+2. Read `data/<product>/icp.md`, in particular `## Search queries` and `## Learned disqualifiers`, and compare against the search log to see which queries and segments have not been tried yet, and which segments produced the highest-scoring leads (use `python3 scripts/leads.py list --json` and group by industry).
+3. Write the digest to `data/<product>/digests/<today>.md` (create the folder if needed) and show it in the chat:
 
    ```markdown
    # Digest <today> (last N days)

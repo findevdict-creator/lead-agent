@@ -14,13 +14,13 @@ Enrich leads with deeper research. `$ARGUMENTS` is a lead id, the word `approved
    - **Tech and tools**: careers page, job posts (`"<company>" jobs <relevant role>`), integrations page, anything that reveals the stack or the process your product replaces.
    - **The pain**: blog posts, reviews, community threads where the company or its staff describe the problem your product solves.
    - **Size and location**: confirm from the about page, job posts or press. Keep ranges.
-3. Decide what changed. Re-score with the rubric in `data/icp.md` if the evidence moved; explain in `fit_reason`.
+3. Decide what changed. Re-score with the rubric in `data/<product>/icp.md` if the evidence moved; explain in `fit_reason`.
 4. Save:
    ```bash
    python3 scripts/leads.py update <id> --set contact_name="..." --set contact_role="..." --set contact_linkedin="..." --set fit_score=NN --set fit_reason="..." --set signals="<old>; <new>" --set sources="<old>; <new url>; ..." --note "enriched: <2-line summary of what was found and what it changed>"
    ```
    Only pass `--set` for fields that actually changed. Always append, never replace, `sources` and `signals` (read the old values from `get`).
-5. Write the longer findings (3 to 10 lines, with URLs) as one `--note`, or append a `## Enrichment <date>` section to `data/notes/<id>.md` if there is a lot.
+5. Write the longer findings (3 to 10 lines, with URLs) as one `--note`, or append a `## Enrichment <date>` section to `data/<product>/notes/<id>.md` if there is a lot.
 
 ## Report
 

@@ -7,7 +7,7 @@ Find companies similar to the lead in `$ARGUMENTS` (first token is the id, optio
 
 ## Steps
 
-1. `python3 scripts/leads.py get <id>` and read `data/notes/<id>.md`. Write a two-line "seed profile": industry, what they sell, size, location, stack, the signal that made them a fit.
+1. `python3 scripts/leads.py get <id>` and read `data/<product>/notes/<id>.md`. Write a two-line "seed profile": industry, what they sell, size, location, stack, the signal that made them a fit.
 2. `python3 scripts/leads.py domains` and `python3 scripts/leads.py searches` so you can skip known companies and queries.
 3. Search for lookalikes using the seed, rotating these query types:
    - `"<seed company>" alternatives` and `"<seed company>" competitors` (then WebFetch comparison or review pages, they list peers)

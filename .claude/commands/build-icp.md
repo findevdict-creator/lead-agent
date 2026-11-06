@@ -3,19 +3,19 @@ description: Build the ideal customer profile and search plan in data/icp.md
 argument-hint: [extra guidance, e.g. "focus on Germany" or "SMBs only"]
 ---
 
-Build or refresh the ideal customer profile (ICP) in `data/icp.md`, using `data/product.md` and any guidance in `$ARGUMENTS`.
+Build or refresh the ideal customer profile (ICP) in `data/<product>/icp.md`, using `data/<product>/product.md` and any guidance in `$ARGUMENTS`.
 
 ## Steps
 
-1. **Read `data/product.md`.** If it does not exist, stop and tell the user to run `/setup-product <url> "<description>"` first.
-2. **If `data/icp.md` already exists**, read it and keep the `## Learned disqualifiers` and `## Notes from the user` sections intact; everything else may be rewritten.
+1. **Read `data/<product>/product.md`.** If it does not exist, stop and tell the user to run `/setup-product <url> "<description>"` first.
+2. **If `data/<product>/icp.md` already exists**, read it and keep the `## Learned disqualifiers` and `## Notes from the user` sections intact; everything else may be rewritten.
 3. **Research who buys this kind of product.** Use WebSearch (4 to 8 queries), for example:
    - `"<competitor>" customers` and `"<competitor>" case study` for 2 to 3 competitors listed in product.md
    - `who uses <category> software`
    - `<category> for <industry>`
    - `"<pain phrase>" site:reddit.com` or `site:news.ycombinator.com` to see who complains about the problem
    WebFetch 2 to 4 of the most useful pages (competitor customer pages are gold: they list real company types and sizes).
-4. **Write `data/icp.md`** with this structure:
+4. **Write `data/<product>/icp.md`** with this structure:
 
    ```markdown
    # Ideal customer profile

@@ -22,7 +22,7 @@ Walk the user through leads in stage `new`. Batch size from `$ARGUMENTS`, defaul
    `approve 1,3  reject 2 "too big"  later 4  skip 5`
    Words: `approve`, `reject` (with optional reason in quotes), `later` (stage `not_now`), `skip` (leave as new).
 4. Apply each decision with `python3 scripts/leads.py update <id> --stage approved|rejected|not_now --note "<reason or 'approved in review'>"`.
-5. **Learn from rejections.** If any rejection reason suggests a rule (too big, wrong country, wrong industry, agency not product company, etc.), append a bullet to `## Learned disqualifiers` in `data/icp.md` in the form `- <rule> (from <id>, <date>)`. Don't add duplicates. Tell the user what you learned.
+5. **Learn from rejections.** If any rejection reason suggests a rule (too big, wrong country, wrong industry, agency not product company, etc.), append a bullet to `## Learned disqualifiers` in `data/<product>/icp.md` in the form `- <rule> (from <id>, <date>)`. Don't add duplicates. Tell the user what you learned.
 6. Offer the next batch if more `new` leads remain, otherwise show `python3 scripts/leads.py stats` and suggest `/find-leads` or `/pipeline`.
 
 ## Rules
