@@ -13,6 +13,7 @@ A marketing agent that runs inside Claude Code with **no API keys**. You (Claude
 | `data/searches.log` | Queries already run (`date, found, query`). Check before searching. |
 | `exports/` | CSV exports for Google Sheets |
 | `outreach/<id>.md` | Draft messages (never sent) |
+| `data/digests/<date>.md` | Weekly digests from `/digest` |
 
 Commands live in `.claude/commands/`. Run tests with `python3 -m unittest scripts/test_leads.py`.
 

@@ -102,6 +102,17 @@ class LeadsTest(unittest.TestCase):
             rows = list(csv.DictReader(f))
         self.assertEqual([r["id"] for r in rows], ["beta"])
 
+    def test_digest(self):
+        self.run_cmd("add", self.sample())
+        self.run_cmd("add", self.sample(company="Beta", website="beta.io", fit_score=55))
+        self.run_cmd("update", "beta", "--stage", "contacted", "--next-action", "ping",
+                     "--next-date", "2000-01-01")
+        code, out = self.run_cmd("digest", "--days", "3")
+        self.assertEqual(code, 0)
+        self.assertIn("added: 2", out)
+        self.assertIn("overdue: 1", out)
+        self.assertIn("funnel: new 1 → approved 0 → contacted 1", out)
+
     def test_search_log(self):
         self.run_cmd("log-search", "logistics startups berlin", "--found", "3")
         code, out = self.run_cmd("searches")
