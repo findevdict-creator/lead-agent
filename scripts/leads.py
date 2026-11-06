@@ -79,7 +79,12 @@ def today() -> str:
 
 
 def slugify(text: str) -> str:
-    text = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    import unicodedata
+    text = text.lower()
+    for a, b in (("ä", "ae"), ("ö", "oe"), ("ü", "ue"), ("ß", "ss"), ("æ", "ae"), ("ø", "o")):
+        text = text.replace(a, b)
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
+    text = re.sub(r"[^a-z0-9]+", "-", text).strip("-")
     return text or "lead"
 
 
