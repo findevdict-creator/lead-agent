@@ -169,7 +169,10 @@ def cmd_add(args) -> int:
 
     rows = read_leads()
     by_id = {r["id"]: r for r in rows}
-    by_domain = {normalize_domain(r["website"]): r for r in rows if r["website"]}
+    by_domain: dict[str, list[dict]] = {}
+    for r in rows:
+        if r["website"]:
+            by_domain.setdefault(normalize_domain(r["website"]), []).append(r)
 
     added, skipped = [], []
     for item in items:
@@ -184,12 +187,13 @@ def cmd_add(args) -> int:
             skipped.append((lead_id, "duplicate id"))
             continue
         if domain and domain in by_domain:
-            other = by_domain[domain]
-            new_person = str(item.get("contact_name", "")).strip()
-            # Two different named people at the same organisation (e.g. coaches at one academy) are both kept.
-            same_org_different_person = new_person and other["contact_name"] and new_person.lower() != other["contact_name"].lower()
-            if not same_org_different_person:
-                skipped.append((lead_id, f"duplicate domain {domain} ({other['id']})"))
+            new_person = str(item.get("contact_name", "")).strip().lower()
+            # Different named people at the same organisation (e.g. coaches at one academy) are all kept;
+            # a record without a person, or with a person already stored, is a duplicate.
+            clash = next((o for o in by_domain[domain]
+                          if not new_person or not o["contact_name"] or o["contact_name"].lower() == new_person), None)
+            if clash is not None:
+                skipped.append((lead_id, f"duplicate domain {domain} ({clash['id']})"))
                 continue
         sources = join_list(item.get("sources"))
         if not sources:
@@ -217,7 +221,7 @@ def cmd_add(args) -> int:
         rows.append(row)
         by_id[lead_id] = row
         if domain:
-            by_domain[domain] = row
+            by_domain.setdefault(domain, []).append(row)
         added.append(row)
         if item.get("research"):
             append_note(lead_id, item["research"])
