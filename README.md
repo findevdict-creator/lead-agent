@@ -26,6 +26,8 @@ Requires Python 3.9+ (standard library only) and Claude Code.
 | `/enrich <id>` or `/enrich approved` | Deeper research on a lead: people, news, stack, re-score |
 | `/more-like <id>` | Find lookalike companies of a lead you liked |
 | `/draft-outreach <id> [email\|linkedin]` | Personalised first message and follow-ups in `outreach/` (never sent) |
+| `/harvest [count] [platform]` | Bulk-collect unverified candidates from directories, Reddit, Instagram, LinkedIn, news |
+| `/verify-candidates [count]` | Research candidates, score them, move them to `new` or `rejected` |
 | `/digest [days]` | Weekly summary: what moved, what's overdue, what to search next |
 
 ## Data

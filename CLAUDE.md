@@ -23,7 +23,9 @@ Commands live in `.claude/commands/`. Run tests with `python3 -m unittest script
 
 Columns: `id, company, website, industry, size, location, contact_name, contact_role, contact_email, contact_linkedin, fit_score, fit_reason, signals, sources, stage, next_action, next_action_date, added_on, updated_on, notes`.
 
-Stages: `new → approved → contacted → replied → meeting → won`. Side exits: `rejected`, `lost`, `not_now`.
+Stages: `candidate → new → approved → contacted → replied → meeting → won`. Side exits: `rejected`, `lost`, `not_now`.
+
+`candidate` is for leads harvested in bulk from a list, directory or social search that have **not** been researched yet: name, website, location, one-line snippet and the source URL, with a rough `fit_score` and `fit_reason` starting `unverified:`. `/verify-candidates` researches them and moves them to `new` (or `rejected`). Never show a `candidate` as a qualified lead.
 
 Add leads with JSON, one object or a list:
 

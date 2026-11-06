@@ -68,8 +68,9 @@ COLUMNS = [
     "stage", "next_action", "next_action_date", "added_on", "updated_on", "notes",
 ]
 
-STAGES = ["new", "approved", "contacted", "replied", "meeting", "won",
+STAGES = ["candidate", "new", "approved", "contacted", "replied", "meeting", "won",
           "rejected", "lost", "not_now"]
+FUNNEL = ["candidate", "new", "approved", "contacted", "replied", "meeting", "won"]
 
 
 # ---------- helpers ----------
@@ -318,6 +319,9 @@ def cmd_stats(args) -> int:
         print("\noverdue next actions:")
         for r in sorted(overdue, key=lambda r: r["next_action_date"]):
             print(f"  {r['next_action_date']}  {r['id']:<28} {r['next_action']}")
+    cands = [r for r in rows if r["stage"] == "candidate"]
+    if cands:
+        print(f"\nunverified candidates: {len(cands)} (run /verify-candidates to research and score them)")
     todo = sorted((r for r in rows if r["stage"] == "approved"), key=score_of, reverse=True)[:10]
     if todo:
         print("\ntop approved, not yet contacted:")
@@ -385,7 +389,7 @@ def cmd_digest(args) -> int:
     counts = {}
     for r in rows:
         counts[r["stage"]] = counts.get(r["stage"], 0) + 1
-    print("\nfunnel: " + " → ".join(f"{s} {counts.get(s, 0)}" for s in STAGES[:6]))
+    print("\nfunnel: " + " → ".join(f"{s} {counts.get(s, 0)}" for s in FUNNEL))
     return 0
 
 
