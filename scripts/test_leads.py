@@ -134,6 +134,12 @@ class LeadsTest(unittest.TestCase):
         code, out = self.run_cmd("searches")
         self.assertIn("logistics startups berlin", out)
 
+    def test_slugify(self):
+        s = self.leads.slugify
+        self.assertEqual(s("Stadtwerke Lübeck"), "stadtwerke-luebeck")
+        self.assertEqual(s("Café Münster GmbH"), "cafe-muenster-gmbh")
+        self.assertEqual(s("  Acme, Inc. "), "acme-inc")
+
     def test_normalize_domain(self):
         n = self.leads.normalize_domain
         self.assertEqual(n("https://www.Acme.com/x?y=1"), "acme.com")
