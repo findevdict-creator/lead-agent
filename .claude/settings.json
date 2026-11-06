@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch",
+      "Bash(python3 scripts/leads.py:*)",
+      "Bash(python3 -m unittest:*)",
+      "Read",
+      "Write(data/**)",
+      "Write(outreach/**)",
+      "Write(exports/**)",
+      "Edit(data/**)",
+      "Edit(outreach/**)"
+    ]
+  }
+}
