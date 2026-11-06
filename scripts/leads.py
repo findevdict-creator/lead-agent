@@ -12,6 +12,7 @@ Usage:
   leads.py update <id> [--stage S] [--note "text"] [--next-action "text"]
                        [--next-date YYYY-MM-DD] [--set col=value ...]
   leads.py stats
+  leads.py digest [--days 7] [--ahead 7]
   leads.py export [--stage S] [--out path]
   leads.py log-search "<query>" [--found N]
   leads.py searches
@@ -313,6 +314,52 @@ def cmd_export(args) -> int:
     return 0
 
 
+def cmd_digest(args) -> int:
+    from datetime import timedelta
+    rows = read_leads()
+    t = date.today()
+    since = (t - timedelta(days=args.days)).isoformat()
+    until = (t + timedelta(days=args.ahead)).isoformat()
+    added = [r for r in rows if r["added_on"] >= since]
+    changed = [r for r in rows if r["updated_on"] >= since and r["added_on"] < since]
+    overdue = [r for r in rows if r["next_action_date"] and r["next_action_date"] < t.isoformat()
+               and r["stage"] not in ("won", "lost", "rejected")]
+    due = [r for r in rows if r["next_action_date"] and t.isoformat() <= r["next_action_date"] <= until
+           and r["stage"] not in ("won", "lost", "rejected")]
+    stale = [r for r in rows if r["stage"] == "contacted" and r["updated_on"] < since]
+
+    def activity(lead_id: str) -> list[str]:
+        path = NOTES_DIR / f"{lead_id}.md"
+        if not path.exists():
+            return []
+        return [ln[2:] for ln in path.read_text(encoding="utf-8").splitlines()
+                if ln.startswith("- ") and ln[2:12] >= since]
+
+    print(f"digest: last {args.days} days (since {since}), looking ahead {args.ahead} days\n")
+    print(f"added: {len(added)}")
+    for r in sorted(added, key=score_of, reverse=True):
+        print(f"  {r['fit_score']:>3}  {r['id']:<28} {r['stage']}")
+    print(f"\nchanged: {len(changed)}")
+    for r in changed:
+        print(f"  {r['id']:<28} now {r['stage']}")
+        for line in activity(r["id"]):
+            print(f"      {line}")
+    print(f"\noverdue: {len(overdue)}")
+    for r in sorted(overdue, key=lambda r: r["next_action_date"]):
+        print(f"  {r['next_action_date']}  {r['id']:<28} {r['next_action']}")
+    print(f"\ndue soon: {len(due)}")
+    for r in sorted(due, key=lambda r: r["next_action_date"]):
+        print(f"  {r['next_action_date']}  {r['id']:<28} {r['next_action']}")
+    print(f"\ncontacted with no update for {args.days}+ days: {len(stale)}")
+    for r in stale:
+        print(f"  {r['updated_on']}  {r['id']}")
+    counts = {}
+    for r in rows:
+        counts[r["stage"]] = counts.get(r["stage"], 0) + 1
+    print("\nfunnel: " + " → ".join(f"{s} {counts.get(s, 0)}" for s in STAGES[:6]))
+    return 0
+
+
 def cmd_log_search(args) -> int:
     ensure_files()
     with SEARCH_LOG.open("a", encoding="utf-8") as f:
@@ -366,6 +413,11 @@ def build_parser() -> argparse.ArgumentParser:
     u.set_defaults(fn=cmd_update)
 
     sub.add_parser("stats").set_defaults(fn=cmd_stats)
+
+    d = sub.add_parser("digest")
+    d.add_argument("--days", type=int, default=7, help="look back this many days")
+    d.add_argument("--ahead", type=int, default=7, help="list actions due within this many days")
+    d.set_defaults(fn=cmd_digest)
 
     e = sub.add_parser("export")
     e.add_argument("--stage", choices=STAGES)

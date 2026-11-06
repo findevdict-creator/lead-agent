@@ -23,8 +23,10 @@ Requires Python 3.9+ (standard library only) and Claude Code.
 | `/pipeline` | Stage counts, overdue follow-ups, top approved leads |
 | `/update <id> <stage> ["note"] [date]` | Move a lead and log a note |
 | `/export [stage]` | CSV export to `exports/` for Google Sheets or a CRM |
-
-Phase 2 (coming): `/enrich`, `/more-like`, `/draft-outreach`, `/digest`.
+| `/enrich <id>` or `/enrich approved` | Deeper research on a lead: people, news, stack, re-score |
+| `/more-like <id>` | Find lookalike companies of a lead you liked |
+| `/draft-outreach <id> [email\|linkedin]` | Personalised first message and follow-ups in `outreach/` (never sent) |
+| `/digest [days]` | Weekly summary: what moved, what's overdue, what to search next |
 
 ## Data
 

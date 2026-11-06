@@ -6,6 +6,7 @@ data/product.md
 data/icp.md
 exports/
 outreach/
+data/digests/
 
 __pycache__/
 *.tmp
