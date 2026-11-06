@@ -77,7 +77,7 @@ class LeadsTest(unittest.TestCase):
         row = self.leads.read_leads()[0]
         self.assertEqual(row["stage"], "approved")
         self.assertEqual(row["next_action_date"], "2030-01-01")
-        note = (Path(self.tmp.name) / "data" / "notes" / "acme-corp.md").read_text()
+        note = (Path(self.tmp.name) / "data" / "default" / "notes" / "acme-corp.md").read_text()
         self.assertIn("looks great", note)
         code, _ = self.run_cmd("update", "acme-corp", "--stage", "bogus")
         self.assertEqual(code, 1)
@@ -112,6 +112,22 @@ class LeadsTest(unittest.TestCase):
         self.assertIn("added: 2", out)
         self.assertIn("overdue: 1", out)
         self.assertIn("funnel: new 1 → approved 0 → contacted 1", out)
+
+    def test_products(self):
+        self.run_cmd("add", self.sample())
+        self.assertTrue((Path(self.tmp.name) / "data" / "default" / "leads.csv").exists())
+        code, out = self.run_cmd("product", "Watt Wisely")
+        self.assertIn("active product: watt-wisely", out)
+        import importlib
+        leads = importlib.reload(self.leads)
+        self.leads = leads
+        self.assertEqual(leads.PRODUCT, "watt-wisely")
+        code, out = self.run_cmd("list")
+        self.assertIn("no leads", out)
+        code, out = self.run_cmd("products")
+        self.assertIn("* watt-wisely", out)
+        self.assertIn("  default", out)
+        self.assertIn("leads=1", out)
 
     def test_search_log(self):
         self.run_cmd("log-search", "logistics startups berlin", "--found", "3")

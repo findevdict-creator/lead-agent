@@ -30,7 +30,7 @@ Requires Python 3.9+ (standard library only) and Claude Code.
 
 ## Data
 
-Everything is in `data/`, ignored by git by default. See [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) for the schema, stages and scoring rubric.
+Each product gets its own folder `data/<product>/` (`/setup-product` creates it from the domain; `python3 scripts/leads.py product <name>` switches, `products` lists them). Everything in `data/` is ignored by git by default. See [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) for the schema, stages and scoring rubric.
 
 The helper `scripts/leads.py` is the only thing that writes `leads.csv`. Try `python3 scripts/leads.py --help`. Tests: `python3 -m unittest scripts/test_leads.py`.
 

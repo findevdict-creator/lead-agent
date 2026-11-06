@@ -7,7 +7,7 @@ Find new leads. `$ARGUMENTS` may start with a number (how many leads to add, def
 
 ## Before searching
 
-1. Read `data/icp.md`. If missing, stop and tell the user to run `/build-icp`.
+1. Read `data/<product>/icp.md`. If missing, stop and tell the user to run `/build-icp`.
 2. Run `python3 scripts/leads.py searches` and `python3 scripts/leads.py domains`. Do not re-run a logged query and do not add a company whose domain is already listed.
 3. Pick the segment(s): the one named in the guidance, otherwise the highest-priority segment with the fewest leads so far (check `python3 scripts/leads.py list --json` and count by industry).
 

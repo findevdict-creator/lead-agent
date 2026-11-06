@@ -17,6 +17,12 @@ Usage:
   leads.py log-search "<query>" [--found N]
   leads.py searches
   leads.py domains                  print known domains (for dedupe before research)
+  leads.py product [name]           show the active product, or switch to / create one
+  leads.py products                 list all product workspaces
+
+Each product has its own folder: data/<product>/ (product.md, icp.md, leads.csv,
+notes/, searches.log), exports/<product>/ and outreach/<product>/. The active
+product is stored in data/.active (override with LEAD_AGENT_PRODUCT=<name>).
 """
 from __future__ import annotations
 
@@ -31,11 +37,29 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(os.environ.get("LEAD_AGENT_ROOT", Path(__file__).resolve().parent.parent))
-DATA = ROOT / "data"
+DATA_ROOT = ROOT / "data"
+ACTIVE_FILE = DATA_ROOT / ".active"
+
+
+def active_product() -> str:
+    """Name of the active product folder under data/. Env var wins, then data/.active, then 'default'."""
+    env = os.environ.get("LEAD_AGENT_PRODUCT")
+    if env:
+        return env.strip()
+    if ACTIVE_FILE.exists():
+        name = ACTIVE_FILE.read_text(encoding="utf-8").strip()
+        if name:
+            return name
+    return "default"
+
+
+PRODUCT = active_product()
+DATA = DATA_ROOT / PRODUCT
 LEADS_CSV = DATA / "leads.csv"
 NOTES_DIR = DATA / "notes"
 SEARCH_LOG = DATA / "searches.log"
-EXPORTS = ROOT / "exports"
+EXPORTS = ROOT / "exports" / PRODUCT
+OUTREACH = ROOT / "outreach" / PRODUCT
 
 COLUMNS = [
     "id", "company", "website", "industry", "size", "location",
@@ -360,6 +384,41 @@ def cmd_digest(args) -> int:
     return 0
 
 
+def cmd_product(args) -> int:
+    if args.name:
+        name = slugify(args.name)
+        DATA_ROOT.mkdir(parents=True, exist_ok=True)
+        ACTIVE_FILE.write_text(name + "\n", encoding="utf-8")
+        (DATA_ROOT / name / "notes").mkdir(parents=True, exist_ok=True)
+        print(f"active product: {name}  (data/{name}/)")
+        return 0
+    print(f"active product: {PRODUCT}  (data/{PRODUCT}/)")
+    print(f"  product.md: {'yes' if (DATA / 'product.md').exists() else 'missing'}")
+    print(f"  icp.md:     {'yes' if (DATA / 'icp.md').exists() else 'missing'}")
+    print(f"  leads:      {len(read_leads()) if LEADS_CSV.exists() else 0}")
+    return 0
+
+
+def cmd_products(args) -> int:
+    if not DATA_ROOT.exists():
+        print("no products yet")
+        return 0
+    found = False
+    for p in sorted(DATA_ROOT.iterdir()):
+        if p.is_dir() and not p.name.startswith("."):
+            found = True
+            n = 0
+            csv_path = p / "leads.csv"
+            if csv_path.exists():
+                with csv_path.open(newline="", encoding="utf-8") as f:
+                    n = sum(1 for _ in csv.DictReader(f))
+            mark = "*" if p.name == PRODUCT else " "
+            print(f"{mark} {p.name:<24} leads={n:<4} product.md={'yes' if (p / 'product.md').exists() else 'no':<3} icp.md={'yes' if (p / 'icp.md').exists() else 'no'}")
+    if not found:
+        print("no products yet; run: python3 scripts/leads.py product <name>")
+    return 0
+
+
 def cmd_log_search(args) -> int:
     ensure_files()
     with SEARCH_LOG.open("a", encoding="utf-8") as f:
@@ -431,6 +490,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("searches").set_defaults(fn=cmd_searches)
     sub.add_parser("domains").set_defaults(fn=cmd_domains)
+
+    pr = sub.add_parser("product", help="show or switch the active product")
+    pr.add_argument("name", nargs="?")
+    pr.set_defaults(fn=cmd_product)
+    sub.add_parser("products", help="list product workspaces").set_defaults(fn=cmd_products)
     return p
 
 
