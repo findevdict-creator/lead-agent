@@ -60,6 +60,15 @@ class LeadsTest(unittest.TestCase):
         self.assertEqual(rows[0]["signals"], "hiring; seed")
         self.assertEqual(rows[0]["stage"], "new")
 
+    def test_same_domain_different_people_kept(self):
+        self.run_cmd("add", self.sample(contact_name="Ann Lee"))
+        code, out = self.run_cmd("add", self.sample(company="Acme Corp Coach Bob", contact_name="Bob Ray"))
+        self.assertIn("added", out)
+        code, out = self.run_cmd("add", self.sample(company="Acme Corp Again", contact_name="Ann Lee"))
+        self.assertIn("duplicate domain", out)
+        code, out = self.run_cmd("add", self.sample(company="Acme Corp Nobody"))
+        self.assertIn("duplicate domain", out)
+
     def test_add_many_from_file(self):
         path = Path(self.tmp.name) / "batch.json"
         path.write_text(json.dumps([

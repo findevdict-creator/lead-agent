@@ -184,8 +184,13 @@ def cmd_add(args) -> int:
             skipped.append((lead_id, "duplicate id"))
             continue
         if domain and domain in by_domain:
-            skipped.append((lead_id, f"duplicate domain {domain} ({by_domain[domain]['id']})"))
-            continue
+            other = by_domain[domain]
+            new_person = str(item.get("contact_name", "")).strip()
+            # Two different named people at the same organisation (e.g. coaches at one academy) are both kept.
+            same_org_different_person = new_person and other["contact_name"] and new_person.lower() != other["contact_name"].lower()
+            if not same_org_different_person:
+                skipped.append((lead_id, f"duplicate domain {domain} ({other['id']})"))
+                continue
         sources = join_list(item.get("sources"))
         if not sources:
             skipped.append((lead_id, "no sources given; every lead needs at least one source URL"))
