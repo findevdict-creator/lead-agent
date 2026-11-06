@@ -191,7 +191,7 @@ def cmd_add(args) -> int:
             # Different named people at the same organisation (e.g. coaches at one academy) are all kept;
             # a record without a person, or with a person already stored, is a duplicate.
             clash = next((o for o in by_domain[domain]
-                          if not new_person or not o["contact_name"] or o["contact_name"].lower() == new_person), None)
+                          if not new_person or o["contact_name"].lower() == new_person), None)
             if clash is not None:
                 skipped.append((lead_id, f"duplicate domain {domain} ({clash['id']})"))
                 continue
