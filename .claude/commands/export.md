@@ -1,12 +1,13 @@
 ---
-description: Export leads to a CSV in exports/ for Google Sheets or a CRM
-argument-hint: [stage] [--out path]
+description: Export leads for Google Sheets, HubSpot, Pipedrive, JSON or a follow-up calendar
+argument-hint: [stage] [hubspot|pipedrive|json|ics] [--tag T] [--min-score N] [--out path]
 ---
 
-Export leads to CSV.
+Export leads with `python3 scripts/leads.py export`.
 
-- No arguments: `python3 scripts/leads.py export` (all leads, sorted by score)
-- A stage name in `$ARGUMENTS`: `python3 scripts/leads.py export --stage <stage>`
-- `--out <path>`: pass it through.
+- No arguments: all leads as CSV, sorted by score.
+- A stage name in `$ARGUMENTS` (or several separated by commas): `--stage <stage>`.
+- A format word (`hubspot`, `pipedrive`, `json`, `ics`): `--format <format>`. `ics` is a calendar of open next actions.
+- `--tag`, `--min-score` and `--out` pass through.
 
-Report the file path and the row count, and remind the user: in Google Sheets use File → Import → Upload, choose "Replace current sheet", separator "Comma". For a CRM import, the columns `company, website, contact_name, contact_role, contact_email, stage, notes` map to the usual fields.
+Report the file path and the row count. For Google Sheets: File → Import → Upload, "Replace current sheet", separator "Comma". For HubSpot: Contacts → Import → File from computer, one object (Contacts) with the company association; the headers already match HubSpot's names. For Pipedrive: Import data → Leads, the headers already match. Remind the user that candidates are unverified; suggest `--stage new,approved,contacted,replied,meeting,won` if they only want researched leads.

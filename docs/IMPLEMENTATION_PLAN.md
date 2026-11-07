@@ -184,3 +184,13 @@ Phase 1 (M1 to M4) is the first working version.
 4. **Lead type:** companies with a decision maker (B2B), or individual people (B2C / creators)?
 5. **Should leads data be committed to git** (private repo) or kept local only? Default: local only.
 6. **CRM:** happy with CSV + Google Sheets export for now? A HubSpot or Notion sync could come later and would need a connection.
+
+---
+
+## M10: GUI and pipeline features
+
+A local web GUI (`scripts/gui.py` + `gui/`), standard library only, bound to 127.0.0.1. It never writes `leads.csv` itself; every change goes through the functions in `scripts/leads.py`, so the CLI, slash commands and GUI stay in sync. POST requests need an `X-Lead-Agent` header and a localhost `Host`, so other websites in the browser can't change data.
+
+Added to `leads.py`: `tags` column, filters (`--q`, `--min-score`, `--tag`, `--due`, several stages), `bulk-update`, `tag`, `due`, `analytics`, `import` (header aliases, dedupe, a required source), `dupes` and `merge`, outreach `templates` and `render`, saved views (`data/<product>/views.json`), learned disqualifiers written from the review queue, and exports in HubSpot, Pipedrive, JSON and iCalendar formats.
+
+The Run page starts commands through `claude -p --output-format stream-json`, with `LEAD_AGENT_PRODUCT` set so a run keeps to the product it was started for even if the GUI switches product. Logs go to `data/<product>/runs/`.

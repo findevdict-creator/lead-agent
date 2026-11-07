@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Agent</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Lead Agent</div>
+    <label class="product-pick">
+      <span>Product</span>
+      <select id="product-select"></select>
+    </label>
+    <nav id="nav">
+      <a href="#/dashboard" data-page="dashboard">Dashboard</a>
+      <a href="#/leads" data-page="leads">Leads</a>
+      <a href="#/board" data-page="board">Pipeline board</a>
+      <a href="#/review" data-page="review">Review queue <span class="badge" id="badge-review"></span></a>
+      <a href="#/followups" data-page="followups">Follow-ups <span class="badge warn" id="badge-due"></span></a>
+      <a href="#/outreach" data-page="outreach">Outreach</a>
+      <a href="#/analytics" data-page="analytics">Analytics</a>
+      <a href="#/run" data-page="run">Run agent <span class="badge" id="badge-run"></span></a>
+      <a href="#/data" data-page="data">Product &amp; data</a>
+    </nav>
+    <div class="sidebar-foot">Nothing is ever sent from here. Drafts only.</div>
+  </aside>
+  <main id="main"><div class="loading">Loading…</div></main>
+</div>
+<div id="drawer" class="drawer" hidden></div>
+<div id="toast" class="toast" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>
