@@ -33,6 +33,8 @@ A local web app for running and reviewing the pipeline without the terminal. Sta
 | Run agent | Start `/find-leads`, `/harvest`, `/verify-candidates`, `/enrich`, `/more-like`, `/draft-outreach`, `/digest`, `/build-icp`, `/setup-product` or a free-form request, and watch the log live |
 | Product & data | Switch or create products, edit `product.md` and `icp.md`, import a CSV, merge duplicates, export, view the search log |
 
+For a step-by-step guide to the whole workflow in the GUI, see the [operations manual](docs/OPERATIONS_MANUAL.md).
+
 Run agent uses your local Claude Code CLI (`claude -p`) and your Claude Code login, so there are still no API keys. Run logs are saved to `data/<product>/runs/`. If `claude` is not on your PATH, set `LEAD_AGENT_CLAUDE=/path/to/claude`; every other page works without it.
 
 ## Commands
