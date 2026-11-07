@@ -138,6 +138,17 @@ class LeadsTest(unittest.TestCase):
         self.assertIn("  default", out)
         self.assertIn("leads=1", out)
 
+    def test_product_switch_blocked_when_pinned(self):
+        os.environ["LEAD_AGENT_PRODUCT"] = "wattwisely"
+        try:
+            code, _ = self.run_cmd("product", "wattwisely.com")
+            self.assertEqual(code, 1)
+            self.assertFalse((Path(self.tmp.name) / "data" / "wattwisely-com").exists())
+            code, out = self.run_cmd("product", "wattwisely")
+            self.assertEqual(code, 0)
+        finally:
+            os.environ.pop("LEAD_AGENT_PRODUCT", None)
+
     def test_search_log(self):
         self.run_cmd("log-search", "logistics startups berlin", "--found", "3")
         code, out = self.run_cmd("searches")

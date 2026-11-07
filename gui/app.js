@@ -50,6 +50,7 @@ const S = {
   page: 0,
   selected: new Set(),
   boardCandidates: false,
+  currentView: "",
 };
 function loadPref(k, d) { try { return Object.assign({}, d, JSON.parse(localStorage.getItem("la:" + k) || "{}")); } catch { return d; } }
 function savePref(k, v) { try { localStorage.setItem("la:" + k, JSON.stringify(v)); } catch {} }
@@ -82,6 +83,7 @@ $("#product-select").addEventListener("change", async (e) => {
   try {
     await api("product", { name });
     S.selected.clear();
+    S.currentView = "";
     await loadAll();
     route();
     toast(`Switched to ${S.state.product}`);
@@ -188,31 +190,38 @@ PAGES.leads = async (el) => {
       <label class="row small"><input type="checkbox" id="f-due" ${f.due ? "checked" : ""}> due now</label>
       <button class="ghost" id="f-clear">Clear</button>
       <span class="spacer"></span>
-      <select id="views"><option value="">Saved views…</option>${views.map((v) => `<option>${esc(v.name)}</option>`).join("")}</select>
-      <button id="view-save">Save view</button>
+      <select id="views"><option value="">Saved views…</option>${views.map((v) => `<option ${v.name === S.currentView ? "selected" : ""}>${esc(v.name)}</option>`).join("")}</select>
+      <button id="view-save">Save view</button><button class="ghost" id="view-del" title="Delete the selected saved view">Delete view</button>
       <button id="add-lead">+ Add lead</button>
     </div>
     <div id="bulk"></div>
     <div id="table"></div>`;
-  const apply = () => { S.page = 0; savePref("filters", S.filters); drawTable(); };
+  const apply = () => { S.currentView = ""; const vs = $("#views"); if (vs) vs.value = ""; S.page = 0; savePref("filters", S.filters); drawTable(); };
   $("#f-q").addEventListener("input", (e) => { f.q = e.target.value; apply(); });
   $("#f-stage").addEventListener("change", (e) => { f.stage = e.target.value; apply(); });
   $("#f-hidec").addEventListener("change", (e) => { f.hideCandidates = e.target.checked; apply(); });
   $("#f-min").addEventListener("input", (e) => { f.min_score = e.target.value; apply(); });
   $("#f-tag").addEventListener("change", (e) => { f.tag = e.target.value; apply(); });
   $("#f-due").addEventListener("change", (e) => { f.due = e.target.checked; apply(); });
-  $("#f-clear").addEventListener("click", () => { S.filters = { q: "", stage: "", min_score: "", tag: "", due: false, hideCandidates: true }; savePref("filters", S.filters); PAGES.leads(el); });
+  $("#f-clear").addEventListener("click", () => { S.currentView = ""; S.filters = { q: "", stage: "", min_score: "", tag: "", due: false, hideCandidates: true }; savePref("filters", S.filters); PAGES.leads(el); });
   $("#views").addEventListener("change", (e) => {
     const v = views.find((x) => x.name === e.target.value);
-    if (!v) return;
+    if (!v) { S.currentView = ""; return; }
+    S.currentView = v.name;
     S.filters = Object.assign({ q: "", stage: "", min_score: "", tag: "", due: false, hideCandidates: true }, v.filters);
     savePref("filters", S.filters);
     PAGES.leads(el);
   });
+  $("#view-del").addEventListener("click", async () => {
+    const name = $("#views").value;
+    if (!name) return toast("Pick a saved view to delete first", true);
+    if (!confirm(`Delete the saved view "${name}"?`)) return;
+    try { await api("views/delete", { name }); S.currentView = ""; toast("View deleted"); PAGES.leads(el); } catch (e) { fail(e); }
+  });
   $("#view-save").addEventListener("click", async () => {
     const name = prompt("Name this view (for example: DACH approved 70+)");
     if (!name) return;
-    try { await api("views", { name, filters: S.filters }); toast("View saved"); PAGES.leads(el); } catch (e) { fail(e); }
+    try { await api("views", { name, filters: S.filters }); S.currentView = name; toast("View saved"); PAGES.leads(el); } catch (e) { fail(e); }
   });
   $("#add-lead").addEventListener("click", () => openNewLead());
   drawTable();
@@ -280,7 +289,11 @@ function exportHref(fmt, useFilters) {
   if (useFilters) {
     const ids = filteredRows().map((r) => r.id);
     if (ids.length <= 400) p.set("ids", ids.join(","));
-    else { const f = S.filters; if (f.q) p.set("q", f.q); if (f.stage) p.set("stage", f.stage); if (f.tag) p.set("tag", f.tag); if (f.min_score) p.set("min_score", f.min_score); }
+    else {
+      const f = S.filters;
+      const stage = f.stage || (f.hideCandidates ? S.state.stages.filter((x) => x !== "candidate").join(",") : "");
+      if (f.q) p.set("q", f.q); if (stage) p.set("stage", stage); if (f.tag) p.set("tag", f.tag); if (f.min_score) p.set("min_score", f.min_score); if (f.due) p.set("due", "1");
+    }
   }
   return "/api/export?" + p.toString();
 }
@@ -690,7 +703,7 @@ PAGES.run = async (el) => {
     <div class="grid g2">
       <div class="card"><h2>Commands</h2><div class="grid">
         ${st.commands.map((c) => `<div class="cmd"><div><b>/${esc(c.name)}</b> <span class="muted small">${esc(c.description)}</span></div>
-          <div class="row"><input data-args="${esc(c.name)}" placeholder="${esc(c.hint)}" style="flex:1" value="${pre === c.name ? (c.name === "verify-candidates" ? "20" : c.name === "find-leads" ? "10" : "") : ""}"><button class="${pre === c.name ? "primary" : ""}" data-go="${esc(c.name)}" ${st.claude ? "" : "disabled"}>Run</button></div></div>`).join("")}
+          <div class="row">${c.name === "setup-product" ? `<div class="small muted">Writes into the selected product (${esc(st.product)}). For a new product, pick "+ New product…" in the sidebar first.</div>` : ""}<input data-args="${esc(c.name)}" placeholder="${esc(c.hint)}" style="flex:1" value="${pre === c.name ? (c.name === "verify-candidates" ? "20" : c.name === "find-leads" ? "10" : "") : ""}"><button class="${pre === c.name ? "primary" : ""}" data-go="${esc(c.name)}" ${st.claude ? "" : "disabled"}>Run</button></div></div>`).join("")}
         <div class="cmd"><div><b>Ask the agent anything</b> <span class="muted small">for example: "find 10 more Sportsbox-certified coaches in the UK"</span></div>
           <textarea id="ask" rows="2"></textarea><div class="row end"><button data-go="ask" ${st.claude ? "" : "disabled"}>Ask</button></div></div>
       </div></div>

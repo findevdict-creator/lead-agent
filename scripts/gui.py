@@ -314,7 +314,7 @@ class Handler(BaseHTTPRequestHandler):
             ids = set(filter(None, q.get("ids", "").split(",")))
             rows = [r for r in rows if (not ids or r["id"] in ids) and
                     L.matches(r, q=q.get("q", ""), stage=q.get("stage", ""), tag=q.get("tag", ""),
-                              min_score=q.get("min_score") or None)]
+                              min_score=q.get("min_score") or None, due=q.get("due") == "1")]
             fmt = q.get("format", "csv")
             text = L.export_text(rows, fmt)
             name = f"{L.PRODUCT}-leads-{L.today()}{'' if fmt == 'csv' else '-' + fmt}.{L.EXPORT_EXT[fmt]}"
