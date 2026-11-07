@@ -17,11 +17,15 @@ One workspace can hold several products. Each lives in `data/<product>/`; the ac
 | `outreach/<product>/<id>.md` | Draft messages (never sent) |
 | `data/<product>/digests/<date>.md` | Weekly digests from `/digest` |
 
-Commands live in `.claude/commands/`. Run tests with `python3 -m unittest scripts/test_leads.py`.
+Commands live in `.claude/commands/`. Run tests with `python3 -m unittest scripts/test_leads.py scripts/test_gui.py`.
+
+There is also a local web GUI (`python3 scripts/gui.py`) that reads and writes the same files through `leads.py`, and can start the slash commands through `claude -p`. When a command is started from the GUI, `LEAD_AGENT_PRODUCT` is set to the product it was started for; respect it and do not switch products. Helpers worth knowing: `leads.py list --q/--tag/--min-score/--due`, `bulk-update`, `tag`, `due`, `analytics`, `import`, `dupes`, `merge`, `render`, `export --format hubspot|pipedrive|json|ics`.
 
 ## Lead schema
 
-Columns: `id, company, website, industry, size, location, contact_name, contact_role, contact_email, contact_linkedin, fit_score, fit_reason, signals, sources, stage, next_action, next_action_date, added_on, updated_on, notes`.
+Columns: `id, company, website, industry, size, location, contact_name, contact_role, contact_email, contact_linkedin, fit_score, fit_reason, signals, sources, stage, next_action, next_action_date, added_on, updated_on, notes, tags`.
+
+`tags` is a `; `-separated list of lowercase slugs set by the user (for example `dach; q4-push`). Pass `"tags": [...]` to `add`, or use `leads.py tag`. Don't remove tags the user set.
 
 Stages: `candidate → new → approved → contacted → replied → meeting → won`. Side exits: `rejected`, `lost`, `not_now`.
 
