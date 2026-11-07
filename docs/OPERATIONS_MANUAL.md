@@ -156,7 +156,7 @@ Each product (for example `wattwisely`, `anchorstance`) has its own lead list, I
 
 1. Open the **Product** picker in the sidebar.
 2. Pick an existing product to switch to it, or pick **+ New product…** and type a short name.
-   - Use the website's domain name without the extension (`anchorstance` for anchorstance.com). `/setup-product` names products the same way, so the folders stay matched.
+   - A short name is best, for example the domain without its extension (`anchorstance` for anchorstance.com).
 3. A toast confirms `Switched to <name>`. Every page now shows that product only.
 
 > Switching product in the GUI also changes the active product for Claude Code in the terminal (it writes `data/.active`). If you also work in a terminal, check with `python3 scripts/leads.py product` before running commands there.
@@ -165,11 +165,12 @@ Each product (for example `wattwisely`, `anchorstance`) has its own lead list, I
 
 **Recommended, agent does it:**
 
-1. Go to **Run agent**.
-2. In **/setup-product**, type the URL and a one-line description in quotes, for example:
+1. Make sure the right product is selected in the sidebar (for a new product, create it first with **+ New product…**). When run from the GUI, `/setup-product` writes into the selected product and never creates or switches products; the Run page reminds you which one that is.
+2. Go to **Run agent**.
+3. In **/setup-product**, type the URL and a one-line description in quotes, for example:
    `https://anchorstance.com "Posture coaching app for golf instructors"`
-3. Click **Run** and watch the log. The agent reads your site and a few outside sources and writes `data/<product>/product.md` (what it does, pains, features, pricing, proof, competitors).
-4. Check the result in **Product & data → Product description**. Fix anything wrong and click **Save**.
+4. Click **Run** and watch the log. The agent reads your site and a few outside sources and writes `data/<product>/product.md` (what it does, pains, features, pricing, proof, competitors).
+5. Check the result in **Product & data → Product description**. Fix anything wrong and click **Save**.
 
 **Manual:** go to **Product & data**, type into **Product description `product.md`**, click **Save**. Start the file with `# Product name` so the GUI can show the name in headers and templates.
 
@@ -376,7 +377,7 @@ Selections survive paging and filtering, so you can build a selection across sev
 - **hide candidates:** on by default. Unticked, or with stage `candidate` chosen, candidates show with an "unverified" label.
 - **min score**, **Any tag**, **due now** (next action date today or earlier, on open leads).
 - **Clear** resets the filters.
-- **Saved views:** **Save view** stores the current filters under a name (per product, in `data/<product>/views.json`). Pick it later from **Saved views…**. Saving with an existing name replaces that view. There is no delete button yet: to remove a view, delete its entry from `views.json` in a text editor (`python3 scripts/leads.py views` lists them).
+- **Saved views:** **Save view** stores the current filters under a name (per product, in `data/<product>/views.json`). Pick it later from **Saved views…**. Saving with an existing name replaces that view. To remove one, pick it in **Saved views…** and click **Delete view** (it asks you to confirm). Changing any filter deselects the view, so it's clear the table no longer matches it.
 - Click a column header to sort; click again to reverse. 100 rows per page.
 - **Export these (CSV)** downloads the rows matching the current filters.
 
@@ -494,7 +495,7 @@ All on **Product & data** unless noted.
 
 You can also export from **Leads** (**Export these (CSV)** for the current filters, or **Export** in the bulk bar for selected rows).
 
-> On the Leads page, "Export these" sends the exact rows when there are 400 or fewer. Above 400 it sends the search, stage, tag and score filters instead, which don't include "hide candidates" or "due now". Pick a stage before exporting large lists if you need candidates excluded.
+On the Leads page, **Export these (CSV)** always matches what the table shows: search, stage, "hide candidates", min score, tag and "due now" all apply, however many rows there are.
 
 ### 13.2 Duplicates
 
@@ -602,6 +603,6 @@ Everything the GUI does can be done in a terminal with `python3 scripts/leads.py
 | Outreach shows `[first_name]`, `[hook]` etc. | That field is blank on the lead | Replace by hand, or enrich the lead first |
 | "Open in email app" does nothing | No default mail app set in the OS | Use **Copy** and paste into your email |
 | Wrong product's data showing | Product was switched, maybe in a terminal | Pick the right product in the sidebar picker |
-| `/setup-product` created a second product | It names the product after the domain | Create or select the product with the domain name before running it (section 4.1), or switch to the new one; delete the empty folder in `data/` if you like |
+| `/setup-product` wrote into the wrong product | It writes into whichever product was selected when you clicked Run | Select or create the right product (section 4.1) and run it again. If it overwrote another product's description, switch to that product and fix it under **Product & data**, or run `/setup-product` there again |
 | Merge button missing for a group | Group has three or more leads | Merge pairs from the CLI: `python3 scripts/leads.py merge <keep> <dup>` |
 | Anything else | | Run the tests: `python3 -m unittest scripts/test_leads.py scripts/test_gui.py`. Start with `LEAD_AGENT_GUI_DEBUG=1` to see each request in the terminal |
