@@ -1154,6 +1154,13 @@ def cmd_digest(args) -> int:
 def cmd_product(args) -> int:
     if args.name:
         name = slugify(args.name)
+        pinned = os.environ.get("LEAD_AGENT_PRODUCT", "").strip()
+        if pinned and name != pinned:
+            # Runs started from the GUI are pinned to one product; switching would split the work
+            # across two folders, because every later leads.py call still follows the env var.
+            print(f"product is pinned to {pinned} for this run (LEAD_AGENT_PRODUCT); not switching to {name}. "
+                  f"Keep working in data/{pinned}/.", file=sys.stderr)
+            return 1
         DATA_ROOT.mkdir(parents=True, exist_ok=True)
         ACTIVE_FILE.write_text(name + "\n", encoding="utf-8")
         (DATA_ROOT / name / "notes").mkdir(parents=True, exist_ok=True)
